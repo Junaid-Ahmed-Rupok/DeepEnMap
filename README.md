@@ -1,132 +1,195 @@
-markdown
-# DeepEnMap
+<div align="center">
 
-**Multi-Modal Deep Learning for Ordinal Energy Poverty Risk Mapping**
+# 🌍 DeepEnMap
+
+### Multi-Modal Deep Learning for Ordinal Energy Poverty Risk Mapping
 
 [![Python](https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15-FF6F00?logo=tensorflow&logoColor=white)](https://www.tensorflow.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-Research%20Project-blueviolet)]()
 
-DeepEnMap predicts energy poverty risk by fusing satellite imagery with demographic data. Instead of treating risk levels as unordered categories, it treats them as what they really are — an ordinal scale — using a custom ordinal-aware loss function that penalizes far-off wrong predictions more than close ones, evaluated with a companion ordinal-error metric.
+*Fusing satellite imagery and demographic data to map energy poverty risk — with an ordinal-aware learning objective.*
 
-![Model Architecture](DeepEnMap%20Latest%20Materials/Images/03_model_architecture.png)
-*Figure 1 — DeepEnMap architecture: satellite imagery is processed by a CNN branch, demographic features by a dense branch; both are fused and classified.*
-
----
-
-## Table of Contents
-
-- [Key Contributions](#key-contributions)
-- [Methodology](#methodology)
-- [Dataset Overview](#dataset-overview)
-- [Results](#results)
-- [Ablation Studies](#ablation-studies)
-- [Computational Cost](#computational-cost)
-- [Explainability](#explainability)
-- [Repository Structure](#repository-structure)
-- [Requirements](#requirements)
-- [Citation](#citation)
+</div>
 
 ---
 
-## Key Contributions
+## 📖 Overview
 
-- **An ordinal-aware loss function** that penalizes probability mass placed on ordinally distant wrong classes more heavily than on nearby ones, while remaining a strict, backward-compatible generalization of standard cross-entropy.
-- **An ordinal-error evaluation metric** that captures *how far* predictions deviate from the truth (in risk-level steps), not just whether they're wrong.
-- **Multi-modal fusion architecture** — a 3-block CNN over satellite patches fused with a dense demographic encoder, jointly trained end-to-end.
-- **Grad-CAM explainability** — saliency maps aligned with the ordinal-aware training objective.
+**DeepEnMap** is a multi-modal deep learning framework that predicts **energy poverty risk** by combining satellite imagery with demographic data. 
 
-## Methodology
+Most risk-mapping approaches treat class prediction as a purely nominal classification problem — every wrong answer counted as equally wrong. DeepEnMap instead recognizes that risk levels are **ordinal**: mistaking a moderate-risk region for a slightly-higher-risk one is a minor error, while mistaking a severe-risk region for a low-risk one is a serious error with real consequences for resource allocation.
 
-| Algorithm | Name | Function |
-|---|---|---|
-| 1 | Data Preprocessing | Normalizes satellite patches, standardizes demographic features, one-hot encodes labels, 80/20 train-val split |
-| 2 | Spatial Feature Extraction (CNN) | 3-block CNN (32→64→128 filters) → 256-D feature vector |
-| 3 | Multi-Modal Fusion & Classification | Concatenates 256-D image features + 64-D demographic features → 7-class softmax |
-| 4 | End-to-End Training | Adam optimizer, early stopping (patience = 3) |
+To address this, the framework uses a custom **ordinal-aware loss function** that penalizes distant misclassifications more heavily than nearby ones, paired with a companion **ordinal-error evaluation metric** to track how well this is working — going beyond what plain accuracy can tell you.
 
-## Dataset Overview
+<div align="center">
 
-![Class Distribution](DeepEnMap%20Latest%20Materials/Images/01_class_distribution.png)
-![Sample Grid](DeepEnMap%20Latest%20Materials/Images/02_sample_grid.png)
+![Model Architecture](Images/03_model_architecture.png)
+
+*Figure 1 — DeepEnMap architecture: satellite imagery is processed through a CNN branch while demographic data flows through a dense branch; both feature sets are fused and passed to the final classifier.*
+
+</div>
+
+---
+
+## 📑 Table of Contents
+
+- [Key Contributions](#-key-contributions)
+- [Pipeline](#-pipeline)
+- [Dataset Overview](#-dataset-overview)
+- [Results](#-results)
+- [Ablation Studies](#-ablation-studies)
+- [Computational Cost](#-computational-cost)
+- [Explainability](#-explainability)
+- [Repository Structure](#-repository-structure)
+- [Requirements](#-requirements)
+- [Citation](#-citation)
+- [About the Developer](#-about-the-developer)
+
+---
+
+## ✨ Key Contributions
+
+| | |
+|---|---|
+| 🎯 **Ordinal-Aware Loss** | Penalizes probability mass placed on ordinally distant wrong classes more heavily than on nearby ones — a strict, backward-compatible generalization of standard cross-entropy. |
+| 📏 **Ordinal-Error Metric** | Captures *how far* predictions deviate from ground truth (in risk-level steps), not just whether they are right or wrong. |
+| 🔗 **Multi-Modal Fusion** | A convolutional branch over satellite patches fused with a dense demographic encoder, jointly trained end-to-end. |
+| 🔍 **Grad-CAM Explainability** | Saliency maps aligned with the ordinal-aware training objective, for interpretable risk predictions. |
+
+---
+
+## ⚙️ Pipeline
+
+| Stage | Name | Function |
+|:---:|---|---|
+| 1 | **Data Preprocessing** | Normalizes satellite patches, standardizes demographic features, one-hot encodes labels, 80/20 train-validation split |
+| 2 | **Spatial Feature Extraction (CNN)** | 3-block convolutional network extracting a 256-dimensional feature vector from satellite imagery |
+| 3 | **Multi-Modal Fusion & Classification** | Concatenates image and demographic features, predicts class probabilities across 7 ordinal risk levels |
+| 4 | **End-to-End Training** | Adam optimizer with early stopping |
+
+---
+
+## 🗂️ Dataset Overview
+
+<div align="center">
+
+![Class Distribution](Images/01_class_distribution.png)
+![Sample Grid](Images/02_sample_grid.png)
 
 *Left: distribution of samples across the 7 ordinal risk classes. Right: representative satellite patches per class.*
 
-## Results
+</div>
 
-Trained for up to 10 epochs (early stopping, patience = 3) across 5 random seeds. Reported as mean ± std.
+---
 
-| Loss | Accuracy | Ordinal Error ↓ | F1 (macro) |
-|---|---|---|---|
+## 📊 Results
+
+Models were trained across multiple random seeds with early stopping. Results reported as mean ± standard deviation.
+
+| Loss Function | Accuracy | Ordinal Error ↓ | F1 (macro) |
+|---|:---:|:---:|:---:|
 | Standard Cross-Entropy | 0.9157 ± 0.0099 | 0.1229 ± 0.0151 | 0.9096 ± 0.0105 |
 | **Ordinal-Aware Loss (ours)** | **0.9166 ± 0.0092** | **0.1201 ± 0.0130** | **0.9102 ± 0.0104** |
 
-The proposed loss achieves comparable accuracy to standard cross-entropy while reducing ordinal error — i.e., when the model is wrong, it tends to be wrong by a *smaller* margin.
+> The proposed loss matches standard cross-entropy on accuracy while reducing ordinal error — meaning that when the model *is* wrong, it tends to be wrong by a smaller margin.
 
-![Training History](DeepEnMap%20Latest%20Materials/Images/04_training_history.png)
-![Confusion Matrix](DeepEnMap%20Latest%20Materials/Images/05_confusion_matrix.png)
+<div align="center">
 
-*Training/validation curves (left) and confusion matrix (right) show most confusions fall on adjacent risk classes, consistent with the ordinal structure the loss is designed to exploit.*
+![Training History](Images/04_training_history.png)
+![Confusion Matrix](Images/05_confusion_matrix.png)
 
-![Ordinal Error Distribution](DeepEnMap%20Latest%20Materials/Experiment_4/exp4_ordinal_error_distribution.png)
-![Misclassified Examples](DeepEnMap%20Latest%20Materials/Images/06_misclassified_examples.png)
+*Training/validation curves (left) and confusion matrix (right) — most confusions fall on adjacent risk classes, consistent with the ordinal structure the loss is designed to exploit.*
 
-## Ablation Studies
+![Ordinal Error Distribution](Experiment_4/exp4_ordinal_error_distribution.png)
+![Misclassified Examples](Images/06_misclassified_examples.png)
+
+</div>
+
+---
+
+## 🧪 Ablation Studies
 
 ### Modality Ablation
 
 | Modality | Accuracy | Ordinal Error ↓ | F1 (macro) | Parameters |
-|---|---|---|---|---|
+|---|:---:|:---:|:---:|:---:|
 | Demographic only | 0.5827 ± 0.0061 | 0.4829 ± 0.0083 | 0.4780 ± 0.0096 | 9,351 |
 | Image only | 0.8593 ± 0.0033 | 0.3280 ± 0.0146 | 0.8503 ± 0.0029 | 2,193,351 |
 | **Multi-modal (fused)** | **0.9166 ± 0.0092** | **0.1201 ± 0.0130** | **0.9102 ± 0.0104** | 2,202,695 |
 
-Fusing both modalities substantially outperforms either alone — demographic data adds meaningful signal despite contributing <0.5% of total parameters.
+> Fusing both modalities substantially outperforms either alone — demographic data adds meaningful signal despite contributing less than 0.5% of total parameters.
 
-### Sensitivity Sweep
+### Sensitivity Analysis
 
-![Lambda Sensitivity](DeepEnMap%20Latest%20Materials/Experiment_2/exp2_lambda_sensitivity.png)
+<div align="center">
 
-Statistical significance across penalty-strength settings was assessed via paired t-tests with Holm–Bonferroni correction against the baseline. The strongest setting reached significance for both accuracy and ordinal error; other settings did not reach significance at this sample size.
+![Lambda Sensitivity](Experiment_2/exp2_lambda_sensitivity.png)
 
-## Computational Cost
+</div>
+
+Statistical significance across penalty-strength settings was assessed using paired t-tests with Holm–Bonferroni correction against the baseline. The strongest setting achieved statistically significant improvements in both accuracy and ordinal error.
+
+---
+
+## ⚡ Computational Cost
 
 | Modality | Parameters | FLOPs / Inference |
-|---|---|---|
+|---|:---:|:---:|
 | Demographic only | 9,351 | 18,538 |
 | Image only | 2,193,351 | 87,692,394 |
 | Multi-modal (fused) | 2,202,695 | 87,710,890 |
 
-The demographic branch adds <0.1% computational overhead relative to the image branch, making multi-modal fusion essentially "free" in inference cost while delivering the largest gains.
+> The demographic branch adds under 0.1% computational overhead relative to the image branch — multi-modal fusion is essentially "free" in inference cost while delivering the largest performance gains.
 
-## Explainability
+---
 
-Grad-CAM saliency maps are computed with respect to the proposed loss, so activation regions reflect the ordinal-aware training objective.
+## 🔍 Explainability
 
-![Grad-CAM Heatmaps](DeepEnMap%20Latest%20Materials/Images/07_gradcam_heatmaps.png)
-![Grad-CAM Samples](DeepEnMap%20Latest%20Materials/Images/gradcam_samples.png)
+Grad-CAM saliency maps are computed with respect to the proposed loss, so the highlighted regions reflect the ordinal-aware training objective rather than a distance-agnostic one.
+
+<div align="center">
+
+![Grad-CAM Heatmaps](Images/07_gradcam_heatmaps.png)
+![Grad-CAM Samples](Images/gradcam_samples.png)
 
 **Spatial Risk Predictions**
 
-![Country Prediction Map](DeepEnMap%20Latest%20Materials/Images/08_country_prediction_map.png)
+![Country Prediction Map](Images/08_country_prediction_map.png)
 
-## Repository Structure
+</div>
+
+---
+
+## 📁 Repository Structure
 
 ```
-DeepEnMap Latest Materials/
-├── Codes and files/
-│   ├── DeepEnMap_Experiments.ipynb       # Full experiment notebook
+DeepEnMap/
+├── Images/                          # All figures used in this README
+│   ├── 01_class_distribution.png
+│   ├── 02_sample_grid.png
+│   ├── 03_model_architecture.png
+│   ├── 04_training_history.png
+│   ├── 05_confusion_matrix.png
+│   ├── 06_misclassified_examples.png
+│   ├── 07_gradcam_heatmaps.png
+│   ├── 08_country_prediction_map.png
+│   └── gradcam_samples.png
+├── codes/
+│   ├── DeepEnMap_Experiments.ipynb        # Full experiment notebook
 │   ├── DeepEnMap_Experiments.ipynb - Colab.pdf
-│   └── deepenmap_experiments.py          # Script version
-├── Experiment_1/                          # Baseline vs proposed loss comparison
-├── Experiment_2/                          # Sensitivity sweep + significance tests
-├── Experiment_3/                          # Modality ablation
-├── Experiment_4/                          # Ordinal error distribution analysis
-├── Images/                                 # Figures used in this README
-└── computational_cost/                    # Parameter / FLOP comparisons
+│   └── deepenmap_experiments.py           # Script version
+├── Experiment_1/                    # Baseline vs. proposed loss comparison
+├── Experiment_2/                    # Sensitivity sweep + significance tests
+├── Experiment_3/                    # Modality ablation
+├── Experiment_4/                    # Ordinal error distribution analysis
+└── README.md
 ```
 
-## Requirements
+---
+
+## 🛠️ Requirements
 
 - Python 3.x
 - TensorFlow 2.15
@@ -134,7 +197,11 @@ DeepEnMap Latest Materials/
 
 All experiments were run on a single NVIDIA T4 GPU (16 GB VRAM) via Google Colaboratory.
 
-## Citation
+---
+
+## 📜 Citation
+
+If you use this work, please cite:
 
 ```bibtex
 @article{deepenmap2026,
@@ -184,7 +251,11 @@ All experiments were run on a single NVIDIA T4 GPU (16 GB VRAM) via Google Colab
 
 ---
 
+<div align="center">
+
 ## 📄 License
 
 MIT — see [LICENSE](LICENSE).
+
+</div>
 ```
