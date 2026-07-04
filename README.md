@@ -33,11 +33,25 @@ To address this, the framework uses a custom **ordinal-aware loss function** tha
 
 ---
 
+## 📦 Dataset
+
+This project uses the **[EuroSAT RGB](https://www.kaggle.com/datasets/apollo2506/eurosat-dataset)** dataset (via `kagglehub`, dataset ID `apollo2506/eurosat-dataset`) — Sentinel-2 satellite imagery patches covering 10 land-use/land-cover classes across Europe.
+
+Since EuroSAT does not natively include energy poverty labels, ordinal risk levels used in this project are derived synthetically to demonstrate the modeling framework, and demographic features are paired with imagery for the multi-modal fusion setup. The dataset is not included in this repository — running the code will automatically download it via `kagglehub`.
+
+```python
+import kagglehub
+dataset_path = kagglehub.dataset_download("apollo2506/eurosat-dataset")
+```
+
+---
+
 ## 📑 Table of Contents
 
+- [Dataset](#-dataset)
 - [Key Contributions](#-key-contributions)
 - [Pipeline](#-pipeline)
-- [Dataset Overview](#-dataset-overview)
+- [Data Visualization](#-data-visualization)
 - [Results](#-results)
 - [Ablation Studies](#-ablation-studies)
 - [Computational Cost](#-computational-cost)
@@ -71,7 +85,7 @@ To address this, the framework uses a custom **ordinal-aware loss function** tha
 
 ---
 
-## 🗂️ Dataset Overview
+## 🗂️ Data Visualization
 
 <div align="center">
 
@@ -184,6 +198,10 @@ DeepEnMap/
 ├── Experiment_2/                    # Sensitivity sweep + significance tests
 ├── Experiment_3/                    # Modality ablation
 ├── Experiment_4/                    # Ordinal error distribution analysis
+├── requirements.txt
+├── LICENSE
+├── CITATION.cff
+├── .gitignore
 └── README.md
 ```
 
@@ -196,6 +214,14 @@ DeepEnMap/
 - Keras
 
 All experiments were run on a single NVIDIA T4 GPU (16 GB VRAM) via Google Colaboratory.
+
+Install dependencies with:
+
+```bash
+pip install -r requirements.txt
+```
+
+> **Note:** The notebook assumes a Google Colab environment; the `google.colab` import can be removed for local runs.
 
 ---
 
@@ -210,6 +236,8 @@ If you use this work, please cite:
   year={2026}
 }
 ```
+
+A machine-readable citation is also available via [`CITATION.cff`](CITATION.cff).
 
 ---
 
@@ -241,6 +269,7 @@ If you use this work, please cite:
 **Other Deployed Projects:**
 - 🔬 [ReproHub](https://reproapp-8jb7vbhnqyltxq23bsr8xn.streamlit.app/) — Automated research reproducibility platform with composite scoring across 11 statistical tests
 - 📊 [StatsPro](https://statistical-analysis-app-7axetqtx75ncuu7fr8irxj.streamlit.app/) — AI-powered statistical analysis platform with automated CSV-to-report workflows
+- 🤖 [Smart RAG Chatbot](https://github.com/Junaid-Ahmed-Rupok/smart-rag-chatbot) — Document Q&A chatbot with cited retrieval, powered by Groq + FAISS + LangChain
 
 **Honors:**
 🏆 1st Best Paper — SPECTRA 2026 &nbsp;·&nbsp;
