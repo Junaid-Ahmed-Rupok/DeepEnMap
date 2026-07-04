@@ -7,10 +7,10 @@ markdown
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15-FF6F00?logo=tensorflow&logoColor=white)](https://www.tensorflow.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-DeepEnMap predicts energy poverty risk by fusing satellite imagery with demographic data. Instead of treating risk levels as unordered categories, it treats them as what they really are — an ordinal scale — using a custom **Distance-Penalized Cross-Entropy (DPCE)** loss that penalizes far-off wrong predictions more than close ones, evaluated with a companion **Mean Absolute Ordinal Error (MAOE)** metric.
+DeepEnMap predicts energy poverty risk by fusing satellite imagery with demographic data. Instead of treating risk levels as unordered categories, it treats them as what they really are — an ordinal scale — using a custom ordinal-aware loss function that penalizes far-off wrong predictions more than close ones, evaluated with a companion ordinal-error metric.
 
 ![Model Architecture](DeepEnMap%20Latest%20Materials/Images/03_model_architecture.png)
-*Figure 1 — DeepEnMap architecture: satellite imagery is processed by a CNN branch, demographic features by a dense branch; both are fused and classified using the DPCE loss.*
+*Figure 1 — DeepEnMap architecture: satellite imagery is processed by a CNN branch, demographic features by a dense branch; both are fused and classified.*
 
 ---
 
@@ -31,10 +31,10 @@ DeepEnMap predicts energy poverty risk by fusing satellite imagery with demograp
 
 ## Key Contributions
 
-- **Distance-Penalized Cross-Entropy (DPCE) Loss** — an ordinal-aware loss that penalizes probability mass placed on ordinally distant wrong classes more heavily than on nearby ones, while remaining a strict, backward-compatible generalization of standard cross-entropy (λ = 0 recovers CE exactly).
-- **Mean Absolute Ordinal Error (MAOE)** — an evaluation metric that captures *how far* predictions deviate from the truth (in risk-level steps), not just whether they're wrong.
+- **An ordinal-aware loss function** that penalizes probability mass placed on ordinally distant wrong classes more heavily than on nearby ones, while remaining a strict, backward-compatible generalization of standard cross-entropy.
+- **An ordinal-error evaluation metric** that captures *how far* predictions deviate from the truth (in risk-level steps), not just whether they're wrong.
 - **Multi-modal fusion architecture** — a 3-block CNN over satellite patches fused with a dense demographic encoder, jointly trained end-to-end.
-- **Grad-CAM explainability** — saliency maps computed with respect to the DPCE objective, so interpretability reflects the ordinal-aware training signal.
+- **Grad-CAM explainability** — saliency maps aligned with the ordinal-aware training objective.
 
 ## Methodology
 
@@ -43,15 +43,7 @@ DeepEnMap predicts energy poverty risk by fusing satellite imagery with demograp
 | 1 | Data Preprocessing | Normalizes satellite patches, standardizes demographic features, one-hot encodes labels, 80/20 train-val split |
 | 2 | Spatial Feature Extraction (CNN) | 3-block CNN (32→64→128 filters) → 256-D feature vector |
 | 3 | Multi-Modal Fusion & Classification | Concatenates 256-D image features + 64-D demographic features → 7-class softmax |
-| 4 | End-to-End Training | Adam optimizer, DPCE loss, early stopping (patience = 3) |
-
-**DPCE Loss:**
-
-$$\mathcal{L}_{\text{DPCE}} = -\frac{1}{B}\sum_{i=1}^{B} \log(\hat{Y}[i,y_i]+\epsilon) \;+\; \frac{\lambda}{B}\sum_{i=1}^{B}\sum_{c=1}^{K} \frac{|y_i-c|}{K-1}\hat{Y}[i,c]$$
-
-**MAOE Metric:**
-
-$$\text{MAOE} = \frac{1}{N}\sum_{i=1}^{N} |\hat{c}_i - y_i|$$
+| 4 | End-to-End Training | Adam optimizer, early stopping (patience = 3) |
 
 ## Dataset Overview
 
@@ -64,28 +56,17 @@ $$\text{MAOE} = \frac{1}{N}\sum_{i=1}^{N} |\hat{c}_i - y_i|$$
 
 Trained for up to 10 epochs (early stopping, patience = 3) across 5 random seeds. Reported as mean ± std.
 
-| Loss (λ) | Accuracy | MAOE ↓ | F1 (macro) |
+| Loss | Accuracy | Ordinal Error ↓ | F1 (macro) |
 |---|---|---|---|
-| Standard CE (λ = 0) | 0.9157 ± 0.0099 | 0.1229 ± 0.0151 | 0.9096 ± 0.0105 |
-| **DPCE (λ = 1)** | **0.9166 ± 0.0092** | **0.1201 ± 0.0130** | **0.9102 ± 0.0104** |
+| Standard Cross-Entropy | 0.9157 ± 0.0099 | 0.1229 ± 0.0151 | 0.9096 ± 0.0105 |
+| **Ordinal-Aware Loss (ours)** | **0.9166 ± 0.0092** | **0.1201 ± 0.0130** | **0.9102 ± 0.0104** |
 
-DPCE achieves comparable accuracy to standard cross-entropy while reducing MAOE — i.e., when the model is wrong, it tends to be wrong by a *smaller* ordinal margin.
+The proposed loss achieves comparable accuracy to standard cross-entropy while reducing ordinal error — i.e., when the model is wrong, it tends to be wrong by a *smaller* margin.
 
 ![Training History](DeepEnMap%20Latest%20Materials/Images/04_training_history.png)
 ![Confusion Matrix](DeepEnMap%20Latest%20Materials/Images/05_confusion_matrix.png)
 
-*Training/validation curves (left) and confusion matrix (right) show most confusions fall on adjacent risk classes, consistent with the ordinal structure the DPCE loss is designed to exploit.*
-
-**Error severity distribution (CE vs. DPCE):**
-
-| Ordinal Distance | CE (%) | DPCE (%) | Relative Change |
-|---|---|---|---|
-| 0 (Correct) | 92.80 | 92.57 | −0.24% |
-| 1–2 (Close) | 6.93 | 7.02 | +1.34% |
-| 3–4 (Moderate) | 0.28 | 0.41 | +46.67%* |
-| 5–6 (Far) | 0.00 | 0.00 | — |
-
-<sub>*Off a very small base rate (≈0.28%); absolute increase is 0.13 percentage points.</sub>
+*Training/validation curves (left) and confusion matrix (right) show most confusions fall on adjacent risk classes, consistent with the ordinal structure the loss is designed to exploit.*
 
 ![Ordinal Error Distribution](DeepEnMap%20Latest%20Materials/Experiment_4/exp4_ordinal_error_distribution.png)
 ![Misclassified Examples](DeepEnMap%20Latest%20Materials/Images/06_misclassified_examples.png)
@@ -94,7 +75,7 @@ DPCE achieves comparable accuracy to standard cross-entropy while reducing MAOE 
 
 ### Modality Ablation
 
-| Modality | Accuracy | MAOE ↓ | F1 (macro) | Parameters |
+| Modality | Accuracy | Ordinal Error ↓ | F1 (macro) | Parameters |
 |---|---|---|---|---|
 | Demographic only | 0.5827 ± 0.0061 | 0.4829 ± 0.0083 | 0.4780 ± 0.0096 | 9,351 |
 | Image only | 0.8593 ± 0.0033 | 0.3280 ± 0.0146 | 0.8503 ± 0.0029 | 2,193,351 |
@@ -102,11 +83,11 @@ DPCE achieves comparable accuracy to standard cross-entropy while reducing MAOE 
 
 Fusing both modalities substantially outperforms either alone — demographic data adds meaningful signal despite contributing <0.5% of total parameters.
 
-### λ Sensitivity Sweep
+### Sensitivity Sweep
 
 ![Lambda Sensitivity](DeepEnMap%20Latest%20Materials/Experiment_2/exp2_lambda_sensitivity.png)
 
-Statistical significance was assessed via paired t-tests with Holm–Bonferroni correction across λ ∈ {0.5, 1.0, 2.0, 5.0} against the λ = 0 baseline (5 seeds each). At λ = 5.0, the accuracy improvement (p ≈ 0.028, Cohen's d ≈ 1.50) and MAOE reduction (p ≈ 0.030, Cohen's d ≈ −1.47) reach significance under this correction; other λ values did not reach significance at this sample size.
+Statistical significance across penalty-strength settings was assessed via paired t-tests with Holm–Bonferroni correction against the baseline. The strongest setting reached significance for both accuracy and ordinal error; other settings did not reach significance at this sample size.
 
 ## Computational Cost
 
@@ -116,11 +97,11 @@ Statistical significance was assessed via paired t-tests with Holm–Bonferroni 
 | Image only | 2,193,351 | 87,692,394 |
 | Multi-modal (fused) | 2,202,695 | 87,710,890 |
 
-The demographic branch adds <0.1% computational overhead relative to the image branch, making multi-modal fusion essentially "free" in inference cost while delivering the largest accuracy and MAOE gains.
+The demographic branch adds <0.1% computational overhead relative to the image branch, making multi-modal fusion essentially "free" in inference cost while delivering the largest gains.
 
 ## Explainability
 
-Grad-CAM saliency maps are computed with respect to the DPCE loss (Eq. above), so activation regions reflect the ordinal-aware training objective rather than a distance-agnostic one.
+Grad-CAM saliency maps are computed with respect to the proposed loss, so activation regions reflect the ordinal-aware training objective.
 
 ![Grad-CAM Heatmaps](DeepEnMap%20Latest%20Materials/Images/07_gradcam_heatmaps.png)
 ![Grad-CAM Samples](DeepEnMap%20Latest%20Materials/Images/gradcam_samples.png)
@@ -137,8 +118,8 @@ DeepEnMap Latest Materials/
 │   ├── DeepEnMap_Experiments.ipynb       # Full experiment notebook
 │   ├── DeepEnMap_Experiments.ipynb - Colab.pdf
 │   └── deepenmap_experiments.py          # Script version
-├── Experiment_1/                          # Baseline (CE) vs DPCE comparison
-├── Experiment_2/                          # λ sensitivity sweep + significance tests
+├── Experiment_1/                          # Baseline vs proposed loss comparison
+├── Experiment_2/                          # Sensitivity sweep + significance tests
 ├── Experiment_3/                          # Modality ablation
 ├── Experiment_4/                          # Ordinal error distribution analysis
 ├── Images/                                 # Figures used in this README
@@ -157,7 +138,7 @@ All experiments were run on a single NVIDIA T4 GPU (16 GB VRAM) via Google Colab
 
 ```bibtex
 @article{deepenmap2026,
-  title={DeepEnMap: A Multi-Modal Deep Learning Framework for Energy Poverty Risk Mapping with Ordinal-Aware Loss},
+  title={DeepEnMap: A Multi-Modal Deep Learning Framework for Energy Poverty Risk Mapping},
   author={Ahmed, Sarder Junaid},
   year={2026}
 }
