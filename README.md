@@ -51,7 +51,7 @@ Energy poverty risk is **ordinal**: calling a severe-risk region "moderate" is a
 For a batch of size $B$, $K$ ordinal classes, true rank $y_i$ and predicted probabilities $\hat{Y}_{i,c}$:
 
 $$
-\mathcal{L}_{\text{DPCE}} = \frac{1}{B}\sum_{i=1}^{B}\left[-\log \hat{Y}_{i,y_i} \;+\; \lambda \sum_{c=1}^{K} \frac{|y_i - c|}{K-1}\,\hat{Y}_{i,c}\right]
+\mathcal{L}_{\text{DPCE}} = \frac{1}{B}\sum_{i=1}^{B}\left[-\log \hat{Y}_{i,y_i} \;+\; \lambda \sum_{c=1}^{K} \frac{|y_i - c|}{K-1}\hat{Y}_{i,c}\right]
 $$
 
 The first term is standard cross-entropy. The second pushes probability mass away from classes that are far from the true rank, scaled by penalty strength $\lambda$.
