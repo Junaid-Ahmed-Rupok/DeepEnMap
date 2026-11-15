@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 430" width="1200" height="430">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5b6b7a"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="430" rx="16" fill="#f7fafc"/>
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">
+    <text x="600" y="40" font-size="23" font-weight="700" fill="#0b1d2e">DeepEnMap architecture</text>
+
+    <!-- image branch -->
+    <text x="40" y="92" text-anchor="start" font-size="14" font-weight="700" fill="#2b6a9e">IMAGE BRANCH</text>
+    <rect x="40" y="104" width="130" height="86" rx="10" fill="#fff" stroke="#2b6a9e" stroke-width="2"/>
+    <text x="105" y="140" font-size="15" font-weight="700" fill="#0b1d2e">Sentinel-2</text>
+    <text x="105" y="160" font-size="13" fill="#4a5c6d">RGB patch</text>
+    <text x="105" y="178" font-size="13" fill="#4a5c6d">64 × 64 × 3</text>
+
+    <rect x="200" y="104" width="120" height="86" rx="10" fill="#e3effa" stroke="#2b6a9e"/>
+    <text x="260" y="138" font-size="14" font-weight="700" fill="#0b1d2e">Conv 32</text>
+    <text x="260" y="158" font-size="12" fill="#4a5c6d">BN · MaxPool</text>
+    <text x="260" y="176" font-size="12" fill="#4a5c6d">→ 32×32</text>
+
+    <rect x="340" y="104" width="120" height="86" rx="10" fill="#cfe2f5" stroke="#2b6a9e"/>
+    <text x="400" y="138" font-size="14" font-weight="700" fill="#0b1d2e">Conv 64</text>
+    <text x="400" y="158" font-size="12" fill="#4a5c6d">BN · MaxPool</text>
+    <text x="400" y="176" font-size="12" fill="#4a5c6d">→ 16×16</text>
+
+    <rect x="480" y="104" width="120" height="86" rx="10" fill="#b5d2ef" stroke="#2b6a9e"/>
+    <text x="540" y="138" font-size="14" font-weight="700" fill="#0b1d2e">Conv 128</text>
+    <text x="540" y="158" font-size="12" fill="#4a5c6d">BN · MaxPool</text>
+    <text x="540" y="176" font-size="12" fill="#4a5c6d">→ 8×8 (Grad-CAM)</text>
+
+    <rect x="620" y="104" width="130" height="86" rx="10" fill="#2b6a9e"/>
+    <text x="685" y="140" font-size="14" font-weight="700" fill="#fff">Dense 256</text>
+    <text x="685" y="160" font-size="12" fill="#d6e4ee">Dropout 0.5</text>
+    <text x="685" y="178" font-size="12" fill="#d6e4ee">z_s ∈ ℝ²⁵⁶</text>
+
+    <!-- demo branch -->
+    <text x="40" y="262" text-anchor="start" font-size="14" font-weight="700" fill="#2f8f5b">DEMOGRAPHIC BRANCH</text>
+    <rect x="40" y="274" width="130" height="96" rx="10" fill="#fff" stroke="#2f8f5b" stroke-width="2"/>
+    <text x="105" y="300" font-size="15" font-weight="700" fill="#0b1d2e">4 features</text>
+    <text x="105" y="320" font-size="11.5" fill="#4a5c6d">income · unemployment</text>
+    <text x="105" y="336" font-size="11.5" fill="#4a5c6d">building age</text>
+    <text x="105" y="352" font-size="11.5" fill="#4a5c6d">population density</text>
+
+    <rect x="270" y="284" width="140" height="76" rx="10" fill="#dff2e6" stroke="#2f8f5b"/>
+    <text x="340" y="316" font-size="14" font-weight="700" fill="#0b1d2e">Dense 128</text>
+    <text x="340" y="336" font-size="12" fill="#4a5c6d">Dropout 0.3</text>
+
+    <rect x="460" y="284" width="140" height="76" rx="10" fill="#2f8f5b"/>
+    <text x="530" y="316" font-size="14" font-weight="700" fill="#fff">Dense 64</text>
+    <text x="530" y="336" font-size="12" fill="#d8f0e2">z_d ∈ ℝ⁶⁴</text>
+
+    <!-- fusion -->
+    <rect x="800" y="180" width="130" height="110" rx="12" fill="#fff4e0" stroke="#e08a1e" stroke-width="2"/>
+    <text x="865" y="222" font-size="15" font-weight="700" fill="#0b1d2e">Concatenate</text>
+    <text x="865" y="244" font-size="13" fill="#4a5c6d">[z_s ; z_d]</text>
+    <text x="865" y="264" font-size="13" fill="#4a5c6d">ℝ³²⁰</text>
+
+    <rect x="970" y="180" width="190" height="110" rx="12" fill="#c0392b"/>
+    <text x="1065" y="216" font-size="15" font-weight="700" fill="#fff">Dense 7 · softmax</text>
+    <text x="1065" y="240" font-size="13" fill="#fbe0dc">risk rank 0 … 6</text>
+    <text x="1065" y="268" font-size="12.5" font-weight="600" fill="#fff">trained with DPCE loss</text>
+  </g>
+
+  <g stroke="#5b6b7a" stroke-width="2.2" fill="none">
+    <line x1="171" y1="147" x2="196" y2="147" marker-end="url(#a)"/>
+    <line x1="321" y1="147" x2="336" y2="147" marker-end="url(#a)"/>
+    <line x1="461" y1="147" x2="476" y2="147" marker-end="url(#a)"/>
+    <line x1="601" y1="147" x2="616" y2="147" marker-end="url(#a)"/>
+    <path d="M751 147 C 780 147, 775 215, 796 215" marker-end="url(#a)"/>
+    <line x1="171" y1="322" x2="266" y2="322" marker-end="url(#a)"/>
+    <line x1="411" y1="322" x2="456" y2="322" marker-end="url(#a)"/>
+    <path d="M601 322 C 760 322, 760 260, 796 260" marker-end="url(#a)"/>
+    <line x1="931" y1="235" x2="966" y2="235" marker-end="url(#a)"/>
+  </g>
+  <text x="600" y="408" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#6b7c8c">≈2.20M parameters; the demographic branch adds only ≈9K · Adam (lr 1e-4) · batch 64 · up to 10 epochs with early stopping</text>
+</svg>

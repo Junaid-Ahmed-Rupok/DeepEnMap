@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this work, please cite it as below."
-title: "DeepEnMap: A Multi-Modal Deep Learning Framework for Energy Poverty Risk Mapping"
+title: "DeepEnMap: Ordinal-Aware Multi-Modal Deep Learning for Energy Poverty Risk Mapping"
 authors:
   - family-names: "Ahmed"
     given-names: "Sarder Junaid"

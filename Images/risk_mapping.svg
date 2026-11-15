@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 250" width="1200" height="250">
+  <rect width="1200" height="250" rx="16" fill="#f7fafc"/>
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">
+    <text x="600" y="38" font-size="21" font-weight="700" fill="#0b1d2e">From EuroSAT land-use classes to 7 ordinal risk ranks</text>
+
+    <g>
+      <rect x="40"  y="66" width="150" height="56" rx="10" fill="#1a9850"/>
+      <text x="115" y="91" font-size="18" font-weight="700" fill="#fff">Rank 0</text>
+      <text x="115" y="111" font-size="12" fill="#e8f6ec">lowest risk</text>
+      <text x="115" y="148" font-size="13.5" fill="#33475b">River</text>
+      <text x="115" y="168" font-size="13.5" fill="#33475b">SeaLake</text>
+    </g>
+    <g>
+      <rect x="200" y="66" width="150" height="56" rx="10" fill="#66bd63"/>
+      <text x="275" y="99" font-size="18" font-weight="700" fill="#fff">Rank 1</text>
+      <text x="275" y="148" font-size="13.5" fill="#33475b">Forest</text>
+      <text x="275" y="168" font-size="13.5" fill="#33475b">HerbaceousVeg.</text>
+      <text x="275" y="188" font-size="13.5" fill="#33475b">AnnualCrop</text>
+    </g>
+    <g>
+      <rect x="360" y="66" width="150" height="56" rx="10" fill="#a6d96a"/>
+      <text x="435" y="99" font-size="18" font-weight="700" fill="#24412b">Rank 2</text>
+      <text x="435" y="148" font-size="13.5" fill="#33475b">Pasture</text>
+    </g>
+    <g>
+      <rect x="520" y="66" width="150" height="56" rx="10" fill="#fee08b"/>
+      <text x="595" y="99" font-size="18" font-weight="700" fill="#5a4a10">Rank 3</text>
+      <text x="595" y="148" font-size="13.5" fill="#33475b">PermanentCrop</text>
+    </g>
+    <g>
+      <rect x="680" y="66" width="150" height="56" rx="10" fill="#fdae61"/>
+      <text x="755" y="99" font-size="18" font-weight="700" fill="#5a2e08">Rank 4</text>
+      <text x="755" y="148" font-size="13.5" fill="#33475b">Residential</text>
+    </g>
+    <g>
+      <rect x="840" y="66" width="150" height="56" rx="10" fill="#f46d43"/>
+      <text x="915" y="99" font-size="18" font-weight="700" fill="#fff">Rank 5</text>
+      <text x="915" y="148" font-size="13.5" fill="#33475b">Highway</text>
+    </g>
+    <g>
+      <rect x="1000" y="66" width="160" height="56" rx="10" fill="#d73027"/>
+      <text x="1080" y="91" font-size="18" font-weight="700" fill="#fff">Rank 6</text>
+      <text x="1080" y="111" font-size="12" fill="#fde3df">highest risk</text>
+      <text x="1080" y="148" font-size="13.5" fill="#33475b">Industrial</text>
+    </g>
+    <text x="600" y="228" font-size="13" fill="#6b7c8c">Ranks are a synthetic proxy used to demonstrate the ordinal modelling framework. EuroSAT has no real energy-poverty labels.</text>
+  </g>
+</svg>

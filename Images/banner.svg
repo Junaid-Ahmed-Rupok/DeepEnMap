@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="1200" height="300">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1d2e"/>
+      <stop offset="1" stop-color="#16324a"/>
+    </linearGradient>
+    <linearGradient id="risk" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#1a9850"/>
+      <stop offset="0.5" stop-color="#fee08b"/>
+      <stop offset="1" stop-color="#d73027"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="300" rx="18" fill="url(#bg)"/>
+
+  <!-- satellite-tile grid coloured by risk -->
+  <g transform="translate(860 40)">
+    <g stroke="#0b1d2e" stroke-width="3">
+      <rect x="0"   y="0"   width="52" height="52" fill="#1a9850"/>
+      <rect x="54"  y="0"   width="52" height="52" fill="#66bd63"/>
+      <rect x="108" y="0"   width="52" height="52" fill="#a6d96a"/>
+      <rect x="162" y="0"   width="52" height="52" fill="#d9ef8b"/>
+      <rect x="216" y="0"   width="52" height="52" fill="#fee08b"/>
+      <rect x="0"   y="54"  width="52" height="52" fill="#66bd63"/>
+      <rect x="54"  y="54"  width="52" height="52" fill="#a6d96a"/>
+      <rect x="108" y="54"  width="52" height="52" fill="#fee08b"/>
+      <rect x="162" y="54"  width="52" height="52" fill="#fdae61"/>
+      <rect x="216" y="54"  width="52" height="52" fill="#f46d43"/>
+      <rect x="0"   y="108" width="52" height="52" fill="#a6d96a"/>
+      <rect x="54"  y="108" width="52" height="52" fill="#fee08b"/>
+      <rect x="108" y="108" width="52" height="52" fill="#fdae61"/>
+      <rect x="162" y="108" width="52" height="52" fill="#f46d43"/>
+      <rect x="216" y="108" width="52" height="52" fill="#d73027"/>
+      <rect x="0"   y="162" width="52" height="52" fill="#d9ef8b"/>
+      <rect x="54"  y="162" width="52" height="52" fill="#fdae61"/>
+      <rect x="108" y="162" width="52" height="52" fill="#f46d43"/>
+      <rect x="162" y="162" width="52" height="52" fill="#d73027"/>
+      <rect x="216" y="162" width="52" height="52" fill="#a50026"/>
+    </g>
+    <rect x="0" y="230" width="268" height="10" rx="5" fill="url(#risk)"/>
+    <text x="0" y="258" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#9fb6c8">low risk</text>
+    <text x="268" y="258" text-anchor="end" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#9fb6c8">high risk</text>
+  </g>
+
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif">
+    <text x="60" y="112" font-size="64" font-weight="700" fill="#ffffff">Deep<tspan fill="#fdae61">En</tspan>Map</text>
+    <text x="62" y="160" font-size="24" fill="#d6e4ee">Ordinal-aware multi-modal deep learning</text>
+    <text x="62" y="192" font-size="24" fill="#d6e4ee">for energy poverty risk mapping</text>
+    <text x="62" y="244" font-size="16" fill="#9fb6c8">Satellite imagery + demographics  ·  Distance-Penalized Cross-Entropy  ·  Grad-CAM</text>
+  </g>
+</svg>
